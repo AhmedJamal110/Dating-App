@@ -1,3 +1,6 @@
+using App.API.DataContext;
+using Microsoft.EntityFrameworkCore;
+
 namespace App.API
 {
     public class Program
@@ -13,7 +16,22 @@ namespace App.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<DataDbContext>(opt =>
+            {
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefalutConnection"));
+            });
+            
+            builder.Services.AddCors();
+
+
+
             var app = builder.Build();
+
+            app.UseCors(opt =>
+            {
+                opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
