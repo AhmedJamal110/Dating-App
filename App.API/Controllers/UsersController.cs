@@ -1,13 +1,13 @@
 ﻿using App.API.DataContext;
 using App.API.Entites;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    [Authorize]
+    public class UsersController : BaseController
     {
         private readonly DataDbContext _context;
 
@@ -16,7 +16,7 @@ namespace App.API.Controllers
             _context = context;
         }
 
-
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<IReadOnlyList<AppUser>> GetAllUsers()
         {
@@ -28,6 +28,7 @@ namespace App.API.Controllers
 
             return Ok(users);
         }
+
 
         [HttpGet("{id}")]
         public ActionResult<AppUser> GetUserById( int id)
