@@ -44,10 +44,7 @@ namespace App.API.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return user;
-        //    {
-        //        UserName = user.UserName,
-        //        Token = _token.CreateToken(user)
-        //}
+       
 
         }
 

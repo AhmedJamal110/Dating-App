@@ -1,5 +1,7 @@
 ﻿using App.API.DataContext;
+using App.API.Helper;
 using App.API.Interfaces;
+using App.API.Repositories;
 using App.API.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +19,9 @@ namespace App.API.Extension
             {
                 opt.UseSqlServer(config.GetConnectionString("DefalutConnection"));
             });
+
+            services.AddScoped<IUserRepositaory, UserRepo>();
+            services.AddAutoMapper(typeof(MappingProfile));
              services.AddCors();
 
 

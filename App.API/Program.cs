@@ -1,6 +1,7 @@
 using App.API.DataContext;
 using App.API.Extension;
 using App.API.Interfaces;
+using App.API.MiddelWare;
 using App.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace App.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,23 @@ namespace App.API
             builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
+            app.UseMiddleware<ExceptionMiddelware>();
+            using var Scope = app.Services.CreateScope();
+            var servicesProvid =Scope.ServiceProvider;
+            var loggerFact = servicesProvid.GetRequiredService<ILoggerFactory>(); 
+            try
+            {
+                var dbContext = servicesProvid.GetRequiredService<DataDbContext>();
+                await  dbContext.Database.MigrateAsync();
+
+               await  DbContextSeeding.DatabseSeedingData(dbContext, loggerFact);
+            }
+            catch (Exception ex)
+            {
+               var logger = loggerFact.CreateLogger<Program>();
+                logger.LogError(ex.Message, "Error while migrations ");
+            }
+
 
             app.UseCors(opt =>
             {
